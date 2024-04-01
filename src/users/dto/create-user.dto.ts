@@ -3,16 +3,16 @@ import { Provider } from '../interface/user.interface';
 import { IsEmail } from 'class-validator';
 
 export class CreateUserDto {
-  @ApiProperty()
+  @ApiProperty({ default: 'xyz' })
   username: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: 'example@gmail.com' })
   @IsEmail()
   email: string;
 
-  @ApiProperty()
+  @ApiProperty({ default: '123' })
   password: string;
 
-  @ApiProperty({ enum: Provider, required: true })
+  @ApiProperty({ enum: Provider, required: true, default: 'local' })
   provider: Provider;
 }

@@ -1,14 +1,15 @@
 import { PipeTransform, Injectable, BadRequestException } from '@nestjs/common';
 import { isEmail } from 'class-validator';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
 @Injectable()
 export class EmailValidationPipe implements PipeTransform {
-  transform(userData: CreateUserDto) {
-    if (!this.isValidEmail(userData.email)) {
+  transform(data: any) {
+    if (data.email && !this.isValidEmail(data.email)) {
+      throw new BadRequestException('Invalid email address');
+    } else if (!this.isValidEmail(data)) {
       throw new BadRequestException('Invalid email address');
     }
-    return userData;
+    return data;
   }
 
   private isValidEmail(value: string): boolean {
