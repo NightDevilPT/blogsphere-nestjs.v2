@@ -14,9 +14,7 @@ import { UpdateUserPasswordDto } from './dto/update-password-user.dto';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly commandBus: CommandBus,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @Post('/create')
   @UsePipes(new EmailValidationPipe())

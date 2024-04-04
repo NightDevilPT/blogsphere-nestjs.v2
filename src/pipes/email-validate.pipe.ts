@@ -4,9 +4,9 @@ import { isEmail } from 'class-validator';
 @Injectable()
 export class EmailValidationPipe implements PipeTransform {
   transform(data: any) {
-    if (data.email && !this.isValidEmail(data.email)) {
-      throw new BadRequestException('Invalid email address');
-    } else if (!this.isValidEmail(data)) {
+    const email = data.email || data;
+    if (!this.isValidEmail(email)) {
+      console.log('print 2');
       throw new BadRequestException('Invalid email address');
     }
     return data;

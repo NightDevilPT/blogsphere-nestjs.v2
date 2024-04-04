@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  Unique,
+  OneToOne,
+} from 'typeorm';
 import { Provider } from '../interface/user.interface';
+import { Profile } from 'src/profiles/entities/profile.entity';
 
 @Entity('users')
 @Unique(['email']) // Ensure email uniqueness
@@ -13,10 +20,10 @@ export class User {
   @Column({ length: 255, unique: true })
   email: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ length: 255, nullable: true, select: false })
   password: string;
 
-  @Column({ nullable: true })
+  @Column({ length: 255, nullable: true, select: false })
   token: string;
 
   @Column({ default: false })
@@ -24,4 +31,7 @@ export class User {
 
   @Column({ default: 'local' })
   provider: Provider;
+
+  @OneToOne(() => Profile, (profile) => profile.user, { eager: true })
+  profile: Profile;
 }

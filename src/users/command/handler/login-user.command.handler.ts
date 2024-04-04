@@ -31,7 +31,11 @@ export class LoginUserCommandHandler
 
   async loginUser(payload: loginUserInterface) {
     const { email, password } = payload;
-    const findUser = await this.userRepository.findOne({ where: { email } });
+    const findUser = await this.userRepository.findOne({
+      where: { email },
+      select: ['id', 'password', 'isVerified'],
+    });
+
     if (!findUser) {
       throw new NotFoundException('User not found');
     }
@@ -44,7 +48,6 @@ export class LoginUserCommandHandler
       password,
       findUser.password,
     );
-    console.log(verifyPassword, '@@@@@@@@');
     if (!verifyPassword) {
       throw new UnauthorizedException('Invalid password');
     }

@@ -32,7 +32,10 @@ export class UpdateUserPasswordCommandHandler
     return await this.updatePassword(findUser, password);
   }
 
-  async updatePassword(findUser: User, password: string): Promise<{ message: string }> {
+  async updatePassword(
+    findUser: User,
+    password: string,
+  ): Promise<{ message: string }> {
     try {
       const hashPassword = await this.password.hashPassword(password);
       await this.usersRepository.update(findUser.id, {

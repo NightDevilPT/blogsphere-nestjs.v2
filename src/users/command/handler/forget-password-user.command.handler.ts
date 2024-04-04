@@ -10,7 +10,9 @@ import { ForgetUserCommand } from '../impl/forget-password.command';
 
 @Injectable()
 @CommandHandler(ForgetUserCommand)
-export class ForgetUserCommandHandler implements ICommandHandler<ForgetUserCommand> {
+export class ForgetUserCommandHandler
+  implements ICommandHandler<ForgetUserCommand>
+{
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -21,7 +23,9 @@ export class ForgetUserCommandHandler implements ICommandHandler<ForgetUserComma
 
   async execute(command: ForgetUserCommand): Promise<any> {
     const { emailPayload } = command;
-    const findUser = await this.usersRepository.findOne({ where: { email: emailPayload } });
+    const findUser = await this.usersRepository.findOne({
+      where: { email: emailPayload },
+    });
     if (!findUser) {
       throw new NotFoundException('User not found');
     }
@@ -30,7 +34,9 @@ export class ForgetUserCommandHandler implements ICommandHandler<ForgetUserComma
   }
 
   async generateLink(email: string, user: User): Promise<{ message: string }> {
-    const token = await this.password.hashPassword(`${new Date().toLocaleTimeString()}`);
+    const token = await this.password.hashPassword(
+      `${new Date().toLocaleTimeString()}`,
+    );
     try {
       await this.usersRepository.update(user.id, { token });
       const sendMailResult = await this.mailService.sendUpdatePasswordLink(
