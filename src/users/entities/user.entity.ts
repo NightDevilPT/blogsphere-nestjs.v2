@@ -26,12 +26,12 @@ export class User {
   @Column({ length: 255, nullable: true, select: false })
   token: string;
 
-  @Column({ default: false })
+  @Column({ default: false, name: 'isVerified' })
   isVerified: boolean;
 
   @Column({ default: 'local' })
   provider: Provider;
 
-  @OneToOne(() => Profile, (profile) => profile.user, { eager: true })
+  @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
 }

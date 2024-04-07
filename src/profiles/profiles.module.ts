@@ -7,10 +7,18 @@ import { Profile } from './entities/profile.entity';
 import { User } from 'src/users/entities/user.entity';
 import { JwtService } from 'src/services/jwt-service';
 import { profileCommandHandlers } from './command';
+import { PaginationService } from 'src/services/pagination-service';
+import { profileQueryHandlers } from './query';
 
 @Module({
   imports: [CqrsModule, TypeOrmModule.forFeature([Profile, User])],
   controllers: [ProfilesController],
-  providers: [ProfilesService, JwtService, ...profileCommandHandlers],
+  providers: [
+    ProfilesService,
+    JwtService,
+    PaginationService,
+    ...profileCommandHandlers,
+    ...profileQueryHandlers,
+  ],
 })
 export class ProfilesModule {}

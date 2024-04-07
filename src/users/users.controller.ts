@@ -1,6 +1,15 @@
-import { Controller, Post, Body, UsePipes, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UsePipes,
+  Put,
+  Query,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { EmailValidationPipe } from 'src/pipes/email-validate.pipe';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from './command/impl/create-user.command';
@@ -10,6 +19,7 @@ import { LoginDto } from './dto/login-user.dto';
 import { ForgetUserCommand } from './command/impl/forget-password.command';
 import { UpdateUserPasswordCommand } from './command/impl/update-user-password.command';
 import { UpdateUserPasswordDto } from './dto/update-password-user.dto';
+import { JwtAuthGuard } from 'src/guards/JwtAuthGuard.guard';
 
 @ApiTags('Users')
 @Controller('users')
@@ -47,5 +57,23 @@ export class UsersController {
     return this.commandBus.execute(
       new UpdateUserPasswordCommand(token, passwordPayload.password),
     );
+  }
+
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JWT-auth')
+  @ApiBearerAuth()
+  async deleteUserRequest() {
+    console.log('deleted account token sent');
+    return 'deleted account token sent';
+  }
+
+  @Delete('/delete-account')
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JWT-auth')
+  @ApiBearerAuth()
+  async deleteUser(@Query('token') token: string) {
+    console.log('deleted account', token);
+    return 'deleted account';
   }
 }

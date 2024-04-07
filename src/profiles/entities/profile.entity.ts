@@ -70,7 +70,8 @@ export class Profile {
   linkedinUrl: string;
 
   @OneToOne(() => User, (user) => user.profile, {
-    onDelete: 'CASCADE',
+    cascade: ['insert', 'update'],
+    eager: true,
   })
   @JoinColumn()
   user: User;
