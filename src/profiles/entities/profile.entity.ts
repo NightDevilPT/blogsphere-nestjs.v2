@@ -5,8 +5,9 @@ import {
   Column,
   OneToOne,
   JoinColumn,
-  ManyToMany,
-  JoinTable,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import {
   IsString,
@@ -16,8 +17,9 @@ import {
   IsEnum,
 } from 'class-validator';
 import { GenderEnum } from '../interface/profile-interface';
+import { Blog } from 'src/blogs/entities/blog.entity';
 
-@Entity()
+@Entity('profiles')
 export class Profile {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -69,6 +71,16 @@ export class Profile {
   @IsOptional()
   linkedinUrl: string;
 
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  updatedAt: Date;
+
   @OneToOne(() => User, (user) => user.profile, {
     cascade: ['insert', 'update'],
     eager: true,
@@ -76,41 +88,6 @@ export class Profile {
   @JoinColumn()
   user: User;
 
-  @ManyToMany(() => Profile, (profile) => profile.following, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinTable()
-  followers: Profile[];
-
-  @ManyToMany(() => Profile, (profile) => profile.followers, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinTable()
-  following: Profile[];
-
-  async addFollower(profile: Profile): Promise<void> {
-    if (!this.followers.some((follower) => follower.id === profile.id)) {
-      this.followers.push(profile);
-    }
-  }
-
-  async removeFollower(profile: Profile): Promise<void> {
-    this.followers = this.followers.filter(
-      (follower) => follower.id !== profile.id,
-    );
-  }
-
-  async addFollowing(profile: Profile): Promise<void> {
-    if (!this.following.some((following) => following.id === profile.id)) {
-      this.following.push(profile);
-    }
-  }
-
-  async removeFollowing(profile: Profile): Promise<void> {
-    this.following = this.following.filter(
-      (following) => following.id !== profile.id,
-    );
-  }
+  @OneToMany(() => Blog, (blog) => blog.author, { cascade: true, eager: true })
+  blogs: Blog[];
 }

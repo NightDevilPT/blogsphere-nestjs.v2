@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('scheduler')
+@Entity('schedulers')
 export class Scheduler {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -28,9 +28,13 @@ export class Scheduler {
   @Column({ type: 'uuid' })
   createdBy: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updatedAt: Date;
 }

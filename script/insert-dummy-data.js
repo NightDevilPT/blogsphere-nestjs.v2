@@ -9,7 +9,7 @@ const pool = new Pool({
   port: 5432,
   user: 'postgres',
   password: 'postgres',
-  database: 'blogs',
+  database: 'blog_db',
 });
 
 const meaningfulTags = [
@@ -39,6 +39,9 @@ const meaningfulTags = [
   'business',
   'nature',
   'gaming',
+  'reactjs',
+  'nextjs',
+  'angular',
 ];
 
 // Function to generate a random username
@@ -113,56 +116,94 @@ function generateRandomString(length) {
   return result;
 }
 
-function generateRandomProfile(userId) {
+function generateProfileQuery(userId) {
   const userName = generateRandomName();
-  return {
-    firstName: userName.split(' ')[0],
-    lastName: userName.split(' ')[1],
-    avatar: generateRandomUrl(),
-    gender: ['male', 'female', 'other'][Math.floor(Math.random() * 3)],
-    bio: generateRandomString(50),
-    facebookUrl: generateRandomSocialMediaUrl(userName, 'facebook'),
-    twitterUrl: generateRandomSocialMediaUrl(userName, 'twitter'),
-    youtubeUrl: generateRandomSocialMediaUrl(userName, 'youtube'),
-    instagramUrl: generateRandomSocialMediaUrl(userName, 'instagram'),
-    linkedinUrl: generateRandomSocialMediaUrl(userName, 'linkedin'),
-    userId: userId,
-  };
+  const profileQuery = `INSERT INTO profiles ("firstName", "lastName", avatar, gender, bio, "facebookUrl", "twitterUrl", "youtubeUrl", "instagramUrl", "linkedinUrl", "userId")
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+RETURNING id`;
+  return [
+    profileQuery,
+    [
+      userName.split(' ')[0],
+      userName.split(' ')[1],
+      generateRandomUrl(),
+      ['male', 'female', 'other'][Math.floor(Math.random() * 3)],
+      generateRandomString(50),
+      generateRandomSocialMediaUrl(userName, 'facebook'),
+      generateRandomSocialMediaUrl(userName, 'twitter'),
+      generateRandomSocialMediaUrl(userName, 'youtube'),
+      generateRandomSocialMediaUrl(userName, 'instagram'),
+      generateRandomSocialMediaUrl(userName, 'linkedin'),
+      userId,
+    ],
+  ];
+}
+
+function generateRandomHtmlData() {
+  const title = `<h1>${generateRandomString(10)}</h1>`;
+  const paragraph1 = `<p>${generateRandomString(100)}</p>`;
+  const paragraph2 = `<p>${generateRandomString(150)}</p>`;
+  const paragraph3 = `<p>${generateRandomString(200)}</p>`;
+  return `${title}<br>${paragraph1}<br>${paragraph2}<br>${paragraph3}`;
+}
+
+function generateRandomTags() {
+  const numTags = Math.floor(Math.random() * 4) + 2; // Random number between 2 and 4
+  const tags = [];
+  while (tags.length < numTags) {
+    const tag =
+      meaningfulTags[Math.floor(Math.random() * meaningfulTags.length)];
+    if (!tags.includes(tag)) {
+      tags.push(tag);
+    }
+  }
+  return tags;
 }
 
 const insertDummyData = async () => {
   const client = await pool.connect();
   try {
-    await client.query('TRUNCATE TABLE profile CASCADE;');
+    await client.query('TRUNCATE TABLE profiles CASCADE;');
     await client.query('TRUNCATE TABLE users CASCADE;');
+    await client.query('TRUNCATE TABLE blogs CASCADE;');
     const NO_OF_USER = 20;
     console.log('data inserting...');
     for (let i = 1; i <= NO_OF_USER; i++) {
       const userQuery = await createUserQuery('test123');
       const userData = await client.query(userQuery);
       const userId = userData.rows[0].id;
-      const profileData = generateRandomProfile(userId);
-      const profileQuery = `
-        INSERT INTO profile ("firstName", "lastName", avatar, gender, bio, "facebookUrl", "twitterUrl", "youtubeUrl", "instagramUrl", "linkedinUrl", "userId")
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-		RETURNING id
-      `;
-      const profileRes = await client.query(profileQuery, [
-        profileData.firstName,
-        profileData.lastName,
-        profileData.avatar,
-        profileData.gender,
-        profileData.bio,
-        profileData.facebookUrl,
-        profileData.twitterUrl,
-        profileData.youtubeUrl,
-        profileData.instagramUrl,
-        profileData.linkedinUrl,
-        profileData.userId,
-      ]);
+      const profileRes = await client.query(...generateProfileQuery(userId));
       console.log(
         `Data Inserted\nuser id : ${userId}\nprofile id : ${profileRes.rows[0].id}`,
       );
+
+      const numBlogs = Math.floor(Math.random() * 3) + 2; // Random number between 2 and 4
+      for (let j = 0; j < numBlogs; j++) {
+        const insertBlogQuery = `
+          INSERT INTO blogs (title, description, data, image, tags, "authorId")
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING id
+        `;
+        const blogData = {
+          title: `Blog ${j + 1} ${profileRes.rows[0].id}`,
+          description: generateRandomString(50),
+          data: generateRandomHtmlData(),
+          image: generateRandomUrl(),
+          tags: generateRandomTags(),
+          authorId: profileRes.rows[0].id,
+        };
+        const blog = await client.query(insertBlogQuery, [
+          blogData.title,
+          blogData.description,
+          blogData.data,
+          blogData.image,
+          [...blogData.tags],
+          blogData.authorId,
+        ]);
+        console.log(
+          `Profile with ID ${profileRes.rows[0].id} and blogs ${blog.rows[0].id} inserted.`,
+        );
+      }
     }
   } catch (err) {
     console.log(err, '@@@@@@@2');

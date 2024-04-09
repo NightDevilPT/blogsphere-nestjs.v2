@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Blog } from 'src/blogs/entities/blog.entity';
 import { Profile } from 'src/profiles/entities/profile.entity';
 
 @Injectable()
@@ -39,4 +40,4 @@ interface PaginationResult {
   previous: number | null; // Previous page number, or null if it doesn't exist
 }
 
-type dataType = Profile;
+type dataType = Profile | Blog;
