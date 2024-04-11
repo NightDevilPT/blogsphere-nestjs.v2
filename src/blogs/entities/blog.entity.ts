@@ -28,6 +28,12 @@ export class Blog {
   @Column('simple-array', { nullable: true })
   tags: string[];
 
+  @Column({ nullable: true, default: false })
+  publish: boolean;
+
+  @Column({ nullable: true })
+  schedular: Date;
+
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;
 

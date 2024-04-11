@@ -197,7 +197,7 @@ const insertDummyData = async () => {
           blogData.description,
           blogData.data,
           blogData.image,
-          [...blogData.tags],
+          blogData.tags,
           blogData.authorId,
         ]);
         console.log(

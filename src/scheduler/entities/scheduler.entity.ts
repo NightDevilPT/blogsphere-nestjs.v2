@@ -13,14 +13,17 @@ export class Scheduler {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar' })
-  timeStamp: string;
+  @Column({ default: null })
+  timeStamp: Date;
 
   @Column({ type: 'varchar' })
   command: string;
 
   @Column({ type: 'json' })
   payload: any;
+
+  @Column({ type: 'varchar', nullable: false })
+  payloadId: string;
 
   @Column({ type: 'enum', enum: ['Success', 'Pending'], default: 'Pending' })
   status: string;

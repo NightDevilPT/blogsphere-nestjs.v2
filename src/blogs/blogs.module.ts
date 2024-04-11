@@ -10,9 +10,13 @@ import { Blog } from './entities/blog.entity';
 import { Profile } from 'src/profiles/entities/profile.entity';
 import { allBlogsQuery } from './query';
 import { PaginationService } from 'src/services/pagination-service';
+import { Scheduler } from 'src/scheduler/entities/scheduler.entity';
 
 @Module({
-  imports: [CqrsModule, TypeOrmModule.forFeature([User, Blog, Profile])],
+  imports: [
+    CqrsModule,
+    TypeOrmModule.forFeature([User, Blog, Profile, Scheduler]),
+  ],
   controllers: [BlogsController],
   providers: [
     BlogsService,
