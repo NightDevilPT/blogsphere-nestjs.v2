@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
+import { IsBoolean, IsDate, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreateBlogDto {
   @ApiProperty({ description: 'Title of the blog', default: 'My Blog Title' })
@@ -38,4 +38,18 @@ export class CreateBlogDto {
   })
   @IsOptional()
   tags?: string[];
+
+  @ApiProperty({
+    description: 'True to publish',
+    default: false,
+  })
+  @IsBoolean()
+  publish: boolean;
+
+  @ApiProperty({
+    description: 'Date to publish Blog',
+    default: null,
+  })
+  @IsDate()
+  schedular: Date;
 }

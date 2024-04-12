@@ -18,6 +18,7 @@ export class GetBlogHandler implements IQueryHandler<GetBlogQuery> {
   async execute({ page, limit }: GetBlogQuery): Promise<any> {
     const blogData = await this.blogRepository
       .createQueryBuilder('blog')
+      .andWhere({ publish: true })
       .leftJoinAndSelect('blog.author', 'author')
       .select([
         'blog.id',
@@ -26,6 +27,7 @@ export class GetBlogHandler implements IQueryHandler<GetBlogQuery> {
         'blog.data',
         'blog.image',
         'blog.tags',
+        'blog.publish',
         'author.id',
         'author.firstName',
         'author.lastName',

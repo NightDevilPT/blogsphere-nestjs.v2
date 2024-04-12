@@ -1,9 +1,10 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Blog } from 'src/blogs/entities/blog.entity';
 import { UpdateBlogCommand } from '../impl/update-blog.command';
+import { UpdateSchedulerCommand } from 'src/scheduler/command/handler/update-schedular.command';
 
 @Injectable()
 @CommandHandler(UpdateBlogCommand)
@@ -11,6 +12,7 @@ export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
   constructor(
     @InjectRepository(Blog)
     private readonly blogRepository: Repository<Blog>,
+    private commandBus: CommandBus,
   ) {}
 
   async execute(command: UpdateBlogCommand): Promise<any> {
@@ -21,18 +23,19 @@ export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
       where: { id: blogId },
     });
 
-    // Throw NotFoundException if blog not found
     if (!findBlog) {
       throw new NotFoundException('Blog not found');
     }
-
-    // Update the blog with the new payload data
+    if (payload.schedular) {
+      const scheduleUpdate = await this.commandBus.execute(
+        new UpdateSchedulerCommand(
+          payload.schedular,
+          findBlog.id,
+        ),
+      );
+    }
     Object.assign(findBlog, payload);
-
-    // Save the updated blog
     await this.blogRepository.save(findBlog);
-
-    // Return success message and updated blog data
     return {
       message: 'Blog successfully updated',
       data: findBlog,

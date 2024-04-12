@@ -30,6 +30,7 @@ export class RunSchedularHandler
         timeStamp: LessThanOrEqual(new Date()),
         status: 'Pending',
       },
+      take: 50,
     });
 
     for (let i = 0; i < findSch.length; i++) {
@@ -38,9 +39,8 @@ export class RunSchedularHandler
       );
 
       if (updateBlog) {
-        await this.schedularRepository.update(findSch[i].id, {
-          status: 'Success',
-        });
+        findSch[i].status = 'Success';
+        await this.schedularRepository.save(findSch[i]);
       }
       console.log(findSch[i].payloadId, ' executed...');
     }

@@ -1,4 +1,10 @@
-import { IsString, IsOptional, IsArray } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsArray,
+  IsBoolean,
+  IsDate,
+} from 'class-validator';
 
 export class UpdateBlogDto {
   @IsString()
@@ -21,4 +27,10 @@ export class UpdateBlogDto {
   @IsString({ each: true })
   @IsOptional()
   tags?: string[];
+
+  @IsBoolean()
+  publish?: boolean;
+
+  @IsDate()
+  schedular?: Date;
 }
