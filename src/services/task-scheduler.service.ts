@@ -5,12 +5,12 @@ import { RunSchedularCommand } from 'src/scheduler/command/handler/run-schedular
 
 @Injectable()
 export class SchedulerService {
-  constructor(private readonly commandBus:CommandBus){}
+  constructor(private readonly commandBus: CommandBus) {}
   private readonly logger = new Logger(SchedulerService.name);
 
   @Cron(CronExpression.EVERY_MINUTE)
   handleCron() {
     console.log('cron running...', new Date().toLocaleString());
-    this.commandBus.execute(new RunSchedularCommand())
+    this.commandBus.execute(new RunSchedularCommand());
   }
 }

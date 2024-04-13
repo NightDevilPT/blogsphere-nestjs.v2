@@ -1,13 +1,11 @@
 import { CommandBus, ICommand } from '@nestjs/cqrs';
 
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, Repository } from 'typeorm';
 import { Scheduler } from 'src/scheduler/entities/scheduler.entity';
-import { CreateSchedulerDto } from 'src/scheduler/dto/create-scheduler.dto';
 import { UpdateBlogCommand } from 'src/blogs/command/impl/update-blog.command';
-import { log } from 'console';
 
 export class RunSchedularCommand implements ICommand {
   constructor() {}

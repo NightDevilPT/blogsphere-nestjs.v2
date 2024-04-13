@@ -28,10 +28,7 @@ export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
     }
     if (payload.schedular) {
       const scheduleUpdate = await this.commandBus.execute(
-        new UpdateSchedulerCommand(
-          payload.schedular,
-          findBlog.id,
-        ),
+        new UpdateSchedulerCommand(payload.schedular, findBlog.id),
       );
     }
     Object.assign(findBlog, payload);

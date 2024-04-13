@@ -6,6 +6,8 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity('blogs')
@@ -50,4 +52,8 @@ export class Blog {
     onUpdate: 'CASCADE',
   })
   author: Profile;
+
+  @ManyToMany(() => Profile)
+  @JoinTable()
+  likes: Profile[];
 }

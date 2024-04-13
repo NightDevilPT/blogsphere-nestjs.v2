@@ -14,7 +14,9 @@ export class UpdateSchedulerCommand implements ICommand {
 
 @Injectable()
 @CommandHandler(UpdateSchedulerCommand)
-export class UpdateSchedulerHandler implements ICommandHandler<UpdateSchedulerCommand> {
+export class UpdateSchedulerHandler
+  implements ICommandHandler<UpdateSchedulerCommand>
+{
   constructor(
     @InjectRepository(Scheduler)
     private readonly schedulerRepository: Repository<Scheduler>,

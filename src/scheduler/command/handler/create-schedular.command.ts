@@ -26,9 +26,8 @@ export class CreateSchedularHandler
     const createSchedular = await this.schedularRepository.create(payload);
     const saveSch = await this.schedularRepository.save(createSchedular);
 
-	return {
-		message:`Blog successfully created and publish in ${payload.timeStamp}`,
-		
-	}
+    return {
+      message: `Blog successfully created and publish in ${payload.timeStamp}`,
+    };
   }
 }

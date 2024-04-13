@@ -5,5 +5,5 @@ import { UpdateSchedulerHandler } from './handler/update-schedular.command';
 export const allSchedularCommand = [
   CreateSchedularHandler,
   RunSchedularHandler,
-  UpdateSchedulerHandler
+  UpdateSchedulerHandler,
 ];
