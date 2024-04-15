@@ -18,6 +18,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiSecurity,
+  ApiParam,
 } from '@nestjs/swagger'; // Import Swagger decorators
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateProfileCommand } from './command/impl/create-profile.command';
@@ -25,6 +26,8 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UpdateProfileCommand } from './command/impl/update-profile.command';
 import { isUUID } from 'class-validator';
 import { GetProfileQuery } from './query/impl/get-profile.query';
+import { Profile } from './entities/profile.entity';
+import { GetProfileByIdQuery } from './query/impl/get-profile-by-id.query';
 
 @ApiTags('Profiles') // Add ApiTags decorator to group endpoints in Swagger
 @Controller('profiles')
@@ -35,6 +38,7 @@ export class ProfilesController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'Retrieve all profile data' })
   async findAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
@@ -42,7 +46,14 @@ export class ProfilesController {
     return await this.queryBus.execute(new GetProfileQuery(page, limit));
   }
 
-  @Post()
+  @Get('/:id')
+  @ApiOperation({ summary: 'Retrieve a profile by its ID' })
+  @ApiParam({ name: 'id', description: 'ID of the blog' })
+  async getBlogById(@Param('id') id: string): Promise<Profile> {
+    return this.queryBus.execute(new GetProfileByIdQuery(id));
+  }
+
+  @Post('/create')
   @UseGuards(JwtAuthGuard)
   @ApiSecurity('JWT-auth')
   @ApiBearerAuth()

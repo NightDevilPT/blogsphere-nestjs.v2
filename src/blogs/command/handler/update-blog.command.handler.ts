@@ -27,7 +27,7 @@ export class UpdateBlogHandler implements ICommandHandler<UpdateBlogCommand> {
       throw new NotFoundException('Blog not found');
     }
     if (payload.schedular) {
-      const scheduleUpdate = await this.commandBus.execute(
+      await this.commandBus.execute(
         new UpdateSchedulerCommand(payload.schedular, findBlog.id),
       );
     }

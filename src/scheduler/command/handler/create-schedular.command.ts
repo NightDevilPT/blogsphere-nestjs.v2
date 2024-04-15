@@ -24,7 +24,7 @@ export class CreateSchedularHandler
   async execute(command: CreateSchedularCommand): Promise<any> {
     const { payload } = command;
     const createSchedular = await this.schedularRepository.create(payload);
-    const saveSch = await this.schedularRepository.save(createSchedular);
+    await this.schedularRepository.save(createSchedular);
 
     return {
       message: `Blog successfully created and publish in ${payload.timeStamp}`,

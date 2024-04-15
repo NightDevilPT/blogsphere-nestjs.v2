@@ -74,7 +74,8 @@ function generateRandomGender() {
 
 function generateRandomEmail(username) {
   const domains = ['example.com', 'gmail.com', 'yahoo.com', 'hotmail.com'];
-  const randomDomain = domains[Math.floor(Math.random() * domains.length - 1)];
+  const randomDomainIndex = Math.floor(Math.random() * domains.length); // Fix the random domain selection
+  const randomDomain = domains[randomDomainIndex];
   return `${username}@${randomDomain}`;
 }
 
