@@ -60,7 +60,7 @@ export class BlogsController {
     return this.queryBus.execute(new GetBlogByIdQuery(id));
   }
 
-  @Get('/likes/:id')
+  @Put('/likes/:id')
   @UseGuards(JwtAuthGuard)
   @ApiSecurity('JWT-auth')
   @ApiBearerAuth()
