@@ -28,6 +28,9 @@ import { isUUID } from 'class-validator';
 import { GetProfileQuery } from './query/impl/get-profile.query';
 import { Profile } from './entities/profile.entity';
 import { GetProfileByIdQuery } from './query/impl/get-profile-by-id.query';
+import { UpdateProfileFollowCommand } from './command/impl/update-profile-follow.command';
+import { GetProfileFollowingQuery } from './query/impl/get-profile-following.query';
+import { GetProfileFollowersQuery } from './query/impl/get-profile-followers.query';
 
 @ApiTags('Profiles') // Add ApiTags decorator to group endpoints in Swagger
 @Controller('profiles')
@@ -37,7 +40,7 @@ export class ProfilesController {
     private readonly queryBus: QueryBus,
   ) {}
 
-  @Get()
+  @Get('get-all-profile')
   @ApiOperation({ summary: 'Retrieve all profile data' })
   async findAll(
     @Query('page') page: number = 1,
@@ -46,11 +49,42 @@ export class ProfilesController {
     return await this.queryBus.execute(new GetProfileQuery(page, limit));
   }
 
-  @Get('/:id')
+  @Get('get-profile-by-id/:id')
   @ApiOperation({ summary: 'Retrieve a profile by its ID' })
   @ApiParam({ name: 'id', description: 'ID of the blog' })
-  async getBlogById(@Param('id') id: string): Promise<Profile> {
+  async getProfileById(@Param('id') id: string): Promise<Profile> {
     return this.queryBus.execute(new GetProfileByIdQuery(id));
+  }
+
+  @Get('get-profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JWT-auth')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Retrieve a profile By Token' })
+  async getProfile(@Req() req): Promise<Profile> {
+    const { userId } = req.user;
+    return this.queryBus.execute(new GetProfileByIdQuery(userId, true));
+  }
+
+  @Get('/followers')
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JWT-auth')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Retrieve a profile followers' })
+  async getFollowers(@Req() req) {
+    const { userId } = req.user;
+    console.log(userId, '@@@@@@@');
+    return this.queryBus.execute(new GetProfileFollowersQuery(userId));
+  }
+
+  @Get('/following')
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JWT-auth')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Retrieve a profile following' })
+  async getFollowing(@Req() req) {
+    const { userId } = req.user;
+    return this.queryBus.execute(new GetProfileFollowingQuery(userId));
   }
 
   @Post('/create')
@@ -87,6 +121,25 @@ export class ProfilesController {
     }
     return this.commandBus.execute(
       new UpdateProfileCommand(updateProfileDto, profileId),
+    );
+  }
+
+  @Put('follow/:profileId')
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JWT-auth')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Add / Update profile follows' }) // Add summary for Swagger documentation
+  @ApiResponse({
+    status: 201,
+    description: 'The profile has been successfully Updated.',
+  })
+  updateProfileFollow(@Param('profileId') profileId: string, @Req() req) {
+    const { userId } = req.user;
+    if (!isUUID(profileId)) {
+      throw new BadRequestException('Invalid profileId. It must be a UUID.');
+    }
+    return this.commandBus.execute(
+      new UpdateProfileFollowCommand(profileId, userId),
     );
   }
 }

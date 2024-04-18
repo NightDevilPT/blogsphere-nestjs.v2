@@ -9,9 +9,10 @@ import { JwtService } from 'src/services/jwt-service';
 import { profileCommandHandlers } from './command';
 import { PaginationService } from 'src/services/pagination-service';
 import { profileQueryHandlers } from './query';
+import { Follow } from './entities/profile-follow.entity';
 
 @Module({
-  imports: [CqrsModule, TypeOrmModule.forFeature([Profile, User])],
+  imports: [CqrsModule, TypeOrmModule.forFeature([Profile, User, Follow])],
   controllers: [ProfilesController],
   providers: [
     ProfilesService,
